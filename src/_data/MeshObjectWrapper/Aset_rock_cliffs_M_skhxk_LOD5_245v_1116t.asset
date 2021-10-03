@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8174b2bca683431aa7f73d9dc47b4972, type: 3}
+  m_Name: Aset_rock_cliffs_M_skhxk_LOD5_245v_1116t
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  _mesh: {fileID: -1182403321336411503, guid: e3f8a9cf97e1a2c43be5fbb2cc216832, type: 3}

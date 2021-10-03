@@ -1,0 +1,27 @@
+{
+    "name": "Appalachia.MeshData",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a15d55b77c0da1b42af8372f5619c965",
+        "GUID:4a600fa6fa2ca854b8f233a23710b315",
+        "GUID:873f913f34eb2c34385d17b9a87f21b9",
+        "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
+        "GUID:cf75d8bea22d8fb469a2aa239cfc6930",
+        "GUID:38b9fd055f0048940b2527cad6c86ab0",
+        "GUID:e132de4015952f848a1248a9ee376a50",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:8a2eafa29b15f444eb6d74f94a930e1d",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:6b8c99229a4703f47b9e6e696c2e8d8d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
