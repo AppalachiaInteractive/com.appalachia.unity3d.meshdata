@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Burstable;
 using Appalachia.Core.Collections.Native;
 using Appalachia.Core.Extensions;
-using Appalachia.Core.HashKeys;
+using Appalachia.Jobs.Burstable;
+using Appalachia.Jobs.Types.HashKeys;
 using Appalachia.Utility.Constants;
 using Unity.Burst;
 using Unity.Collections;
@@ -15,7 +15,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.MeshData
+namespace Appalachia.MeshData
 {
     public struct MeshObject : IDisposable
     {
@@ -187,7 +187,7 @@ namespace Appalachia.Core.MeshData
             var originalVertexPositions = new NativeArray<Vector3>(verts, Allocator.TempJob);
             var originalTriangleIndices = new NativeArray<int>(tris, Allocator.TempJob);
             var edgeHash = new NativeHashMap<MeshEdge, int>(verts.Length, Allocator.TempJob);
-            var borderEdgeIndexHash = new Collections.Native.NativeHashSet<int2>(tris.Length * 2, Allocator.TempJob);
+            var borderEdgeIndexHash = new Core.Collections.Native.NativeHashSet<int2>(tris.Length * 2, Allocator.TempJob);
 
             var volumes = new NativeList<float>(tris.Length, Allocator.TempJob);
             var centersOfMass = new NativeList<float3>(tris.Length, Allocator.TempJob);
@@ -614,7 +614,7 @@ namespace Appalachia.Core.MeshData
             [ReadOnly] public NativeArray<MeshVertex> vertices;
 
             [WriteOnly] public NativeList<int>.ParallelWriter borderEdgeIndices;
-            [WriteOnly] public Collections.Native.NativeHashSet<int2>.ParallelWriter borderEdgeIndexHash;
+            [WriteOnly] public Core.Collections.Native.NativeHashSet<int2>.ParallelWriter borderEdgeIndexHash;
 
             public void Execute(int index)
             {

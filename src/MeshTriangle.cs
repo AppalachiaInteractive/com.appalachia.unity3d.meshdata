@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Appalachia.Core.MeshData
+namespace Appalachia.MeshData
 {
     public struct MeshTriangle : IEquatable<MeshTriangle>
     {

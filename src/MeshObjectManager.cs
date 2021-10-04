@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Collections.Implementations.Lookups;
 using Appalachia.Core.Collections.Native;
+using Appalachia.MeshData.Collections;
 using Unity.Profiling;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.MeshData
+namespace Appalachia.MeshData
 {
     [AlwaysInitializeOnLoad]
     public static class MeshObjectManager

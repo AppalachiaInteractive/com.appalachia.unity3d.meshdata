@@ -1,12 +1,12 @@
 #region
 
 using System;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.MeshData
+namespace Appalachia.MeshData
 {
     [Serializable]
     public class MeshObjectWrapper : SelfSavingScriptableObject<MeshObjectWrapper>

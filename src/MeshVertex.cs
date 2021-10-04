@@ -1,12 +1,12 @@
 #region
 
 using System;
-using Appalachia.Core.HashKeys;
+using Appalachia.Jobs.Types.HashKeys;
 using Unity.Mathematics;
 
 #endregion
 
-namespace Appalachia.Core.MeshData
+namespace Appalachia.MeshData
 {
     public struct MeshVertex : IEquatable<MeshVertex>
     {

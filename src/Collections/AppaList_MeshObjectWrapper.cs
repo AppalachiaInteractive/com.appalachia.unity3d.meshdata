@@ -1,11 +1,11 @@
 #region
 
 using System;
-using Appalachia.Core.MeshData;
+using Appalachia.Core.Collections;
 
 #endregion
 
-namespace Appalachia.Core.Collections.Implementations.Lists
+namespace Appalachia.MeshData.Collections
 {
     [Serializable]
     public sealed class AppaList_MeshObjectWrapper : AppaList<MeshObjectWrapper>
