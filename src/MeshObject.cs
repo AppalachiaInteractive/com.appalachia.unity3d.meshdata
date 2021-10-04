@@ -71,7 +71,13 @@ namespace Appalachia.MeshData
         public float3 SolidCenterOfMass => solidCenterOfMass_singleitem[0];
         public float SolidSurfaceArea => solidSurfaceArea_singleitem[0];
 
-        public MeshObject(Mesh mesh, bool solidify, JobHandle deps = default) : this(mesh.vertices, mesh.normals, mesh.triangles, solidify, deps)
+        public MeshObject(Mesh mesh, bool solidify, JobHandle deps = default) : this(
+            mesh.vertices,
+            mesh.normals,
+            mesh.triangles,
+            solidify,
+            deps
+        )
         {
         }
 
@@ -140,7 +146,9 @@ namespace Appalachia.MeshData
                 var y = tris[i + 1];
                 var z = tris[i + 2];
 
-                if (requiredIndices.Contains(x) || requiredIndices.Contains(y) || requiredIndices.Contains(z))
+                if (requiredIndices.Contains(x) ||
+                    requiredIndices.Contains(y) ||
+                    requiredIndices.Contains(z))
                 {
                     var newX = updatedIndices[x];
                     var newY = updatedIndices[y];
@@ -155,7 +163,12 @@ namespace Appalachia.MeshData
             return new MeshObject(newVertices, newNormals, newTriangles.ToArray(), solidify, deps);
         }
 
-        public MeshObject(Vector3[] verts, Vector3[] normals, int[] tris, bool solidify, JobHandle deps = default)
+        public MeshObject(
+            Vector3[] verts,
+            Vector3[] normals,
+            int[] tris,
+            bool solidify,
+            JobHandle deps = default)
         {
             var triangleCount = tris.Length / 3;
 
@@ -167,7 +180,7 @@ namespace Appalachia.MeshData
             edges = new NativeList<MeshEdge>(triangleCount, Allocator.Persistent);
             triangles = new NativeArray<MeshTriangle>(triangleCount, Allocator.Persistent);
             triangleSurfaceAreas = new NativeArray<float>(triangleCount, Allocator.Persistent);
-            triangleFaceNormals = new NativeArray<float3>(triangleCount, Allocator.Persistent);
+            triangleFaceNormals = new NativeArray<float3>(triangleCount,   Allocator.Persistent);
             triangleFaceMidpoints = new NativeArray<float3>(triangleCount, Allocator.Persistent);
             triangleIndices = new NativeList<int>(tris.Length, Allocator.Persistent);
 
@@ -177,7 +190,7 @@ namespace Appalachia.MeshData
             boundsData_singleitem = new NativeArray<BoundsBurst>(1, Allocator.Persistent);
             volume_singleitem = new NativeArray<float>(1, Allocator.Persistent);
             centerOfMass_singleitem = new NativeArray<float3>(1, Allocator.Persistent);
-            surfaceArea_singleitem = new  NativeArray<float>(1, Allocator.Persistent);
+            surfaceArea_singleitem = new NativeArray<float>(1, Allocator.Persistent);
             borderEdgeIndices = new NativeList<int>(tris.Length, Allocator.Persistent);
             borderEdgeNormals = new NativeList<float3>(tris.Length, Allocator.Persistent);
 
@@ -187,7 +200,8 @@ namespace Appalachia.MeshData
             var originalVertexPositions = new NativeArray<Vector3>(verts, Allocator.TempJob);
             var originalTriangleIndices = new NativeArray<int>(tris, Allocator.TempJob);
             var edgeHash = new NativeHashMap<MeshEdge, int>(verts.Length, Allocator.TempJob);
-            var borderEdgeIndexHash = new Core.Collections.Native.NativeHashSet<int2>(tris.Length * 2, Allocator.TempJob);
+            var borderEdgeIndexHash =
+                new Core.Collections.Native.NativeHashSet<int2>(tris.Length * 2, Allocator.TempJob);
 
             var volumes = new NativeList<float>(tris.Length, Allocator.TempJob);
             var centersOfMass = new NativeList<float3>(tris.Length, Allocator.TempJob);
@@ -260,10 +274,16 @@ namespace Appalachia.MeshData
                 surfaceArea = surfaceArea_singleitem
             }.Schedule(handle);
 
-            handle = new CalculateFaceNormal {subvertices = subvertices, faceNormal = averageFaceNormal_singleitem}.Schedule(handle);
+            handle = new CalculateFaceNormal
+            {
+                subvertices = subvertices, faceNormal = averageFaceNormal_singleitem
+            }.Schedule(handle);
 
-            handle = new TrimBorderEdgeNormalsJob {borderEdgeIndices = borderEdgeIndices.AsDeferredJobArray(), borderEdgeNormals = borderEdgeNormals}
-               .Schedule(handle);
+            handle = new TrimBorderEdgeNormalsJob
+            {
+                borderEdgeIndices = borderEdgeIndices.AsDeferredJobArray(),
+                borderEdgeNormals = borderEdgeNormals
+            }.Schedule(handle);
 
             handle = new CalculateBorderNormalJob_PF
             {
@@ -283,7 +303,8 @@ namespace Appalachia.MeshData
                 borderEdgeNormals = borderEdgeNormals.AsDeferredJobArray(),
                 faceNormal = averageFaceNormal_singleitem,
                 /*  W */
-                borderEdgeNormal = borderEdgeNormal_singleitem // [WriteOnly] public NativeArray<float3> borderEdgeNormal;
+                borderEdgeNormal =
+                    borderEdgeNormal_singleitem // [WriteOnly] public NativeArray<float3> borderEdgeNormal;
             }.Schedule(handle);
 
             // ** break out if we are not requiring solid meshes
@@ -292,7 +313,7 @@ namespace Appalachia.MeshData
                 isCreated = true;
 
                 JobHandle.ScheduleBatchedJobs();
-                
+
                 handle.Complete();
 
                 allEdges.Dispose();
@@ -314,14 +335,23 @@ namespace Appalachia.MeshData
                 solidTriangleFaceMidpoints = default;
                 solidVolume_singleitem = default;
                 solidSurfaceArea_singleitem = default;
-                
+
                 return;
             } // ** break out if we are not requiring solid meshes
 
             solidTriangles = new NativeList<MeshTriangle>(triangleCount * 2, Allocator.Persistent);
-            solidTriangleSurfaceAreas = new NativeList<float>(triangleCount * 2, Allocator.Persistent);
-            solidTriangleFaceNormals = new NativeList<float3>(triangleCount * 2, Allocator.Persistent);
-            solidTriangleFaceMidpoints = new NativeList<float3>(triangleCount * 2, Allocator.Persistent);
+            solidTriangleSurfaceAreas = new NativeList<float>(
+                triangleCount * 2,
+                Allocator.Persistent
+            );
+            solidTriangleFaceNormals = new NativeList<float3>(
+                triangleCount * 2,
+                Allocator.Persistent
+            );
+            solidTriangleFaceMidpoints = new NativeList<float3>(
+                triangleCount * 2,
+                Allocator.Persistent
+            );
             solidTriangleIndices = new NativeList<int>(tris.Length * 2, Allocator.Persistent);
             solidVolume_singleitem = new NativeArray<float>(1, Allocator.Persistent);
             solidCenterOfMass_singleitem = new NativeArray<float3>(1, Allocator.Persistent);
@@ -331,11 +361,13 @@ namespace Appalachia.MeshData
             var solidCentersOfMass = new NativeList<float3>(tris.Length, Allocator.TempJob);
             var borderVertexPairs = new NativeList<MeshVertex>(tris.Length, Allocator.TempJob);
             var polygonVertices = new NativeList<MeshVertex>(tris.Length,   Allocator.TempJob);
-            var solidificationTriangles = new NativeList<MeshTriangle>(triangleCount, Allocator.TempJob);
+            var solidificationTriangles =
+                new NativeList<MeshTriangle>(triangleCount, Allocator.TempJob);
 
             handle = new TrimBorderVertexPairsJob
             {
-                borderEdgeIndices = borderEdgeIndices.AsDeferredJobArray(), borderVertexPairs = borderVertexPairs
+                borderEdgeIndices = borderEdgeIndices.AsDeferredJobArray(),
+                borderVertexPairs = borderVertexPairs
             }.Schedule(handle);
 
             handle = new BuildBorderPolygonPairListJob_PF
@@ -359,17 +391,24 @@ namespace Appalachia.MeshData
             handle = new FindRealPolygonJob
             {
                 /* R  */
-                borderVertexPairs = borderVertexPairs.AsDeferredJobArray(), // [ReadOnly] public NativeArray<MeshVertex> borderVertexPairs;
+                borderVertexPairs =
+                    borderVertexPairs
+                       .AsDeferredJobArray(), // [ReadOnly] public NativeArray<MeshVertex> borderVertexPairs;
                 /*  W */
-                polygonVertices = polygonVertices.AsParallelWriter() // [WriteOnly] public NativeList<MeshVertex> polygonVertices;
+                polygonVertices =
+                    polygonVertices
+                       .AsParallelWriter() // [WriteOnly] public NativeList<MeshVertex> polygonVertices;
             }.Schedule(borderVertexPairs, LOOP, handle);
 
             handle = new CalculateSolidificationJob
             {
                 /* R  */
-                polygonVertices = polygonVertices.AsDeferredJobArray(), // [ReadOnly] NativeArray<MeshVertex> polygonVertices;
+                polygonVertices =
+                    polygonVertices
+                       .AsDeferredJobArray(), // [ReadOnly] NativeArray<MeshVertex> polygonVertices;
                 /*  W */
-                solidificationTriangles = solidificationTriangles // [WriteOnly] NativeList<MeshTriangle> solidificationTriangles;
+                solidificationTriangles =
+                    solidificationTriangles // [WriteOnly] NativeList<MeshTriangle> solidificationTriangles;
             }.Schedule(handle);
 
             handle = new BuildSolidTriangleListJob
@@ -509,13 +548,16 @@ namespace Appalachia.MeshData
         [BurstCompile]
         private struct PopulateTriangleDataJob_PF : IJobParallelFor
         {
-            [ReadOnly, NativeDisableParallelForRestriction]
+            [ReadOnly]
+            [NativeDisableParallelForRestriction]
             public NativeArray<int> tris;
 
-            [ReadOnly, NativeDisableParallelForRestriction]
+            [ReadOnly]
+            [NativeDisableParallelForRestriction]
             public NativeArray<int> originalToNewVertexMapping;
 
-            [WriteOnly, NativeDisableParallelForRestriction]
+            [WriteOnly]
+            [NativeDisableParallelForRestriction]
             public NativeArray<MeshTriangle> triangles;
 
             [WriteOnly] public NativeList<int2>.ParallelWriter allEdges;
@@ -537,7 +579,15 @@ namespace Appalachia.MeshData
 
                 var triIndex = index / 3;
 
-                var triangle = new MeshTriangle(triIndex, originalXIndex, originalYIndex, originalZIndex, newXIndex, newYIndex, newZIndex);
+                var triangle = new MeshTriangle(
+                    triIndex,
+                    originalXIndex,
+                    originalYIndex,
+                    originalZIndex,
+                    newXIndex,
+                    newYIndex,
+                    newZIndex
+                );
 
                 triangles[triIndex] = triangle;
 
@@ -614,7 +664,9 @@ namespace Appalachia.MeshData
             [ReadOnly] public NativeArray<MeshVertex> vertices;
 
             [WriteOnly] public NativeList<int>.ParallelWriter borderEdgeIndices;
-            [WriteOnly] public Core.Collections.Native.NativeHashSet<int2>.ParallelWriter borderEdgeIndexHash;
+
+            [WriteOnly]
+            public Core.Collections.Native.NativeHashSet<int2>.ParallelWriter borderEdgeIndexHash;
 
             public void Execute(int index)
             {
@@ -681,7 +733,8 @@ namespace Appalachia.MeshData
             [ReadOnly] public NativeArray<int> borderEdgeIndices;
             [ReadOnly] public NativeArray<MeshEdge> edges;
 
-            [WriteOnly, NativeDisableParallelForRestriction]
+            [WriteOnly]
+            [NativeDisableParallelForRestriction]
             public NativeArray<MeshVertex> borderVertexPairs;
 
             public void Execute(int index)
@@ -770,7 +823,8 @@ namespace Appalachia.MeshData
 
                 //for (var i = 0; i < borderVertexPairs.Length; i += 2)
                 {
-                    var edge1 = borderVertexPairs[index + 1].position - borderVertexPairs[index].position;
+                    var edge1 = borderVertexPairs[index + 1].position -
+                                borderVertexPairs[index].position;
                     float3 edge2;
                     if (index == (borderVertexPairs.Length - 2))
                     {
@@ -778,7 +832,8 @@ namespace Appalachia.MeshData
                     }
                     else
                     {
-                        edge2 = borderVertexPairs[index + 3].position - borderVertexPairs[index + 2].position;
+                        edge2 = borderVertexPairs[index + 3].position -
+                                borderVertexPairs[index + 2].position;
                     }
 
                     edge1 = math.normalize(edge1);
@@ -799,7 +854,12 @@ namespace Appalachia.MeshData
 
                 var check = magnitude < 1.00000000362749E-15;
 
-                return check ? 0.0f : (float) math.acos((double) math.clamp(math.dot(from, to) / magnitude, -1f, 1f)) * 57.29578f;
+                return check
+                    ? 0.0f
+                    : (float) math.acos(
+                          (double) math.clamp(math.dot(from, to) / magnitude, -1f, 1f)
+                      ) *
+                      57.29578f;
             }
         }
 
@@ -931,7 +991,11 @@ namespace Appalachia.MeshData
 
                 var safeNorm = math.normalizesafe(norm);
 
-                faceNormal[0] = new float3((float) safeNorm.x, (float) safeNorm.y, (float) safeNorm.z);
+                faceNormal[0] = new float3(
+                    (float) safeNorm.x,
+                    (float) safeNorm.y,
+                    (float) safeNorm.z
+                );
             }
         }
 
@@ -941,8 +1005,8 @@ namespace Appalachia.MeshData
             [ReadOnly] public NativeArray<MeshVertex> vertices;
             [ReadOnly] public NativeArray<MeshTriangle> triangles;
             [WriteOnly] public NativeArray<float> triangleSurfaceAreas;
-            [WriteOnly] public NativeArray<float3> triangleFaceNormals;     
-            [WriteOnly] public NativeArray<float3> triangleFaceMidpoints;          
+            [WriteOnly] public NativeArray<float3> triangleFaceNormals;
+            [WriteOnly] public NativeArray<float3> triangleFaceMidpoints;
             [WriteOnly] public NativeArray<float> surfaceArea;
 
             public void Execute()
@@ -956,7 +1020,7 @@ namespace Appalachia.MeshData
                     var x = vertices[triangle.xIndex];
                     var y = vertices[triangle.yIndex];
                     var z = vertices[triangle.zIndex];
-                    
+
                     var area = GetTriangleArea(x.position, y.position, z.position);
                     var normal = GetTriangleNormal(x.position, y.position, z.position);
 
@@ -975,7 +1039,9 @@ namespace Appalachia.MeshData
                 var length1 = math.distance(p1, p2);
                 var length2 = math.distance(p3, p1);
 
-                var area = (length1 * length2 * math.sin(math.radians(mathex.angle(p2 - p1, p3 - p1)))) / 2f;
+                var area =
+                    (length1 * length2 * math.sin(math.radians(mathex.angle(p2 - p1, p3 - p1)))) /
+                    2f;
 
                 return area;
             }
@@ -990,15 +1056,15 @@ namespace Appalachia.MeshData
                 return normal;
             }
         }
-        
+
         [BurstCompile]
         private struct CalculateSurfaceDataListJob : IJob
         {
             [ReadOnly] public NativeArray<MeshVertex> vertices;
             [ReadOnly] public NativeArray<MeshTriangle> triangles;
             [WriteOnly] public NativeList<float>.ParallelWriter triangleSurfaceAreas;
-            [WriteOnly] public NativeList<float3>.ParallelWriter triangleFaceNormals;     
-            [WriteOnly] public NativeList<float3>.ParallelWriter triangleFaceMidpoints;          
+            [WriteOnly] public NativeList<float3>.ParallelWriter triangleFaceNormals;
+            [WriteOnly] public NativeList<float3>.ParallelWriter triangleFaceMidpoints;
             [WriteOnly] public NativeArray<float> surfaceArea;
 
             public void Execute()
@@ -1012,7 +1078,7 @@ namespace Appalachia.MeshData
                     var x = vertices[triangle.xIndex];
                     var y = vertices[triangle.yIndex];
                     var z = vertices[triangle.zIndex];
-                    
+
                     var area = GetTriangleArea(x.position, y.position, z.position);
                     var normal = GetTriangleNormal(x.position, y.position, z.position);
 
@@ -1020,7 +1086,9 @@ namespace Appalachia.MeshData
 
                     triangleSurfaceAreas.AddNoResize(area);
                     triangleFaceNormals.AddNoResize(normal);
-                    triangleFaceMidpoints.AddNoResize((x.position + y.position + z.position) / 3.0f);
+                    triangleFaceMidpoints.AddNoResize(
+                        (x.position + y.position + z.position) / 3.0f
+                    );
                 }
 
                 surfaceArea[0] = areaSum;
@@ -1031,7 +1099,9 @@ namespace Appalachia.MeshData
                 var length1 = math.distance(p1, p2);
                 var length2 = math.distance(p3, p1);
 
-                var area = (length1 * length2 * math.sin(math.radians(mathex.angle(p2 - p1, p3 - p1)))) / 2f;
+                var area =
+                    (length1 * length2 * math.sin(math.radians(mathex.angle(p2 - p1, p3 - p1)))) /
+                    2f;
 
                 return area;
             }
@@ -1204,6 +1274,7 @@ namespace Appalachia.MeshData
         {
             Dispose();
         }
+
         public void Dispose()
         {
             isCreated = false;

@@ -34,7 +34,8 @@ namespace Appalachia.MeshData
 
         public bool Equals(MeshEdge other)
         {
-            return ((aIndex == other.aIndex) && (bIndex == other.bIndex)) || ((aIndex == other.bIndex) && (bIndex == other.aIndex));
+            return ((aIndex == other.aIndex) && (bIndex == other.bIndex)) ||
+                   ((aIndex == other.bIndex) && (bIndex == other.aIndex));
         }
 
         public override bool Equals(object obj)

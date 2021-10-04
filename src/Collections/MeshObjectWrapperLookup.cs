@@ -11,8 +11,15 @@ using UnityEngine;
 namespace Appalachia.MeshData.Collections
 {
     [Serializable]
-    [ListDrawerSettings(Expanded = true, DraggableItems = false, HideAddButton = true, HideRemoveButton = true, NumberOfItemsPerPage = 5)]
-    public class MeshObjectWrapperLookup : AppaLookup<int, MeshObjectWrapper, AppaList_int, AppaList_MeshObjectWrapper>
+    [ListDrawerSettings(
+        Expanded = true,
+        DraggableItems = false,
+        HideAddButton = true,
+        HideRemoveButton = true,
+        NumberOfItemsPerPage = 5
+    )]
+    public class MeshObjectWrapperLookup : AppaLookup<int, MeshObjectWrapper, AppaList_int,
+        AppaList_MeshObjectWrapper>
     {
         protected override string GetDisplayTitle(int key, MeshObjectWrapper value)
         {

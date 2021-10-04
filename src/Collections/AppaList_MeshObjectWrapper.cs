@@ -14,11 +14,10 @@ namespace Appalachia.MeshData.Collections
         {
         }
 
-        public AppaList_MeshObjectWrapper(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_MeshObjectWrapper(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

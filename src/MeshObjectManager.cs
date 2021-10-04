@@ -18,7 +18,8 @@ namespace Appalachia.MeshData
     {
         private const string _PRF_PFX = nameof(MeshObjectManager) + ".";
 
-        private static readonly ProfilerMarker _PRF_GetByMesh = new ProfilerMarker(_PRF_PFX + nameof(GetByMesh));
+        private static readonly ProfilerMarker _PRF_GetByMesh = new(_PRF_PFX + nameof(GetByMesh));
+
         //public static int groupingScale = 10000;
 
         private static MeshObjectWrapperLookup _meshes;
@@ -26,25 +27,40 @@ namespace Appalachia.MeshData
 
         private static List<Action> _completionActions;
 
-        private static Dictionary<int, Mesh> _previousLookups = new Dictionary<int, Mesh>();
+        private static Dictionary<int, Mesh> _previousLookups = new();
+
+        private static readonly ProfilerMarker _PRF_GetByMesh_CheckCollection =
+            new(_PRF_PFX + nameof(GetByMesh) + ".CheckCollection");
+
+        private static readonly ProfilerMarker _PRF_GetByMesh_CreateWrapper =
+            new(_PRF_PFX + nameof(GetByMesh) + ".CreateWrapper");
+
+        private static readonly ProfilerMarker _PRF_GetByMesh_Initialize =
+            new(_PRF_PFX + nameof(GetByMesh) + ".Initialize");
+
+        private static readonly ProfilerMarker _PRF_GetByMesh_UpdateCollection =
+            new(_PRF_PFX + nameof(GetByMesh) + ".UpdateCollection");
+
+        private static readonly ProfilerMarker _PRF_GetCheapestMesh =
+            new(_PRF_PFX + nameof(GetCheapestMesh));
+
+        private static readonly ProfilerMarker _PRF_GetCheapestMeshWrapper =
+            new(_PRF_PFX + nameof(GetCheapestMeshWrapper));
+
+        private static readonly ProfilerMarker _PRF_DisposeNativeCollections =
+            new(_PRF_PFX + nameof(DisposeNativeCollections));
 
         static MeshObjectManager()
         {
-
         }
-        
+
         [ExecuteOnEnable]
-        static void Initialize() 
+        private static void Initialize()
         {
             _meshes = new MeshObjectWrapperLookup();
             _soldifiedMeshes = new MeshObjectWrapperLookup();
         }
 
-
-        private static readonly ProfilerMarker _PRF_GetByMesh_CheckCollection = new ProfilerMarker(_PRF_PFX + nameof(GetByMesh) + ".CheckCollection");
-        private static readonly ProfilerMarker _PRF_GetByMesh_CreateWrapper = new ProfilerMarker(_PRF_PFX + nameof(GetByMesh) + ".CreateWrapper");
-        private static readonly ProfilerMarker _PRF_GetByMesh_Initialize = new ProfilerMarker(_PRF_PFX + nameof(GetByMesh) + ".Initialize");
-        private static readonly ProfilerMarker _PRF_GetByMesh_UpdateCollection = new ProfilerMarker(_PRF_PFX + nameof(GetByMesh) + ".UpdateCollection");
         //public static MeshObject GetByMesh(Mesh mesh)
         public static MeshObjectWrapper GetByMesh(Mesh mesh, bool solidified)
         {
@@ -85,12 +101,12 @@ namespace Appalachia.MeshData
                                 return wrapper;
                             }
                         }
-
                     }
-                    
+
                     using (_PRF_GetByMesh_CreateWrapper.Auto())
                     {
-                        var uniqueName = $"{mesh.name}_{mesh.vertexCount}v_{mesh.triangles.Length}t";
+                        var uniqueName =
+                            $"{mesh.name}_{mesh.vertexCount}v_{mesh.triangles.Length}t";
                         wrapper = MeshObjectWrapper.LoadOrCreateNew(uniqueName);
 
                         wrapper.data = new MeshObject(mesh, solidified);
@@ -113,7 +129,6 @@ namespace Appalachia.MeshData
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetCheapestMesh = new ProfilerMarker(_PRF_PFX + nameof(GetCheapestMesh));
         public static Mesh GetCheapestMesh(GameObject obj)
         {
             using (_PRF_GetCheapestMesh.Auto())
@@ -148,7 +163,10 @@ namespace Appalachia.MeshData
 
                     var sortedFilters = filters.OrderBy(mf => mf.sharedMesh.vertexCount).ToArray();
 
-                    meshFilter = sortedFilters.FirstOrDefault(mf => mf.sharedMesh.vertexCount > minimumVertexCount && !mf.sharedMesh.name.EndsWith("_GIZMO"));
+                    meshFilter = sortedFilters.FirstOrDefault(
+                        mf => (mf.sharedMesh.vertexCount > minimumVertexCount) &&
+                              !mf.sharedMesh.name.EndsWith("_GIZMO")
+                    );
 
                     if (meshFilter == null)
                     {
@@ -190,7 +208,6 @@ namespace Appalachia.MeshData
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetCheapestMeshWrapper = new ProfilerMarker(_PRF_PFX + nameof(GetCheapestMeshWrapper));
         public static MeshObjectWrapper GetCheapestMeshWrapper(GameObject obj, bool solidified)
         {
             using (_PRF_GetCheapestMeshWrapper.Auto())
@@ -210,8 +227,7 @@ namespace Appalachia.MeshData
 
             _completionActions.Add(a);
         }
-        
-        private static readonly ProfilerMarker _PRF_DisposeNativeCollections = new ProfilerMarker(_PRF_PFX + nameof(DisposeNativeCollections));
+
         [ExecuteOnDisable]
         private static void DisposeNativeCollections()
         {
@@ -232,7 +248,7 @@ namespace Appalachia.MeshData
                     var mesh = _meshes.GetByIndex(i);
                     mesh.data.Dispose();
                 }
-                
+
                 for (var i = 0; i < _soldifiedMeshes.Count; i++)
                 {
                     var mesh = _soldifiedMeshes.GetByIndex(i);

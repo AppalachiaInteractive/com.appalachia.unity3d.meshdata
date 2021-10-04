@@ -12,12 +12,8 @@ namespace Appalachia.MeshData
     {
 #region Constructor
 
-        public MeshVertex(float3 position, int groupingScale, int originalIndex, int newIndex) : this(
-            position,
-            new JobFloat3Key(position, groupingScale),
-            originalIndex,
-            newIndex
-        )
+        public MeshVertex(float3 position, int groupingScale, int originalIndex, int newIndex) :
+            this(position, new JobFloat3Key(position, groupingScale), originalIndex, newIndex)
         {
         }
 
